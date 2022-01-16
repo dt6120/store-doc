@@ -15,7 +15,9 @@
     "test": "npx hardhat test",
     "local": "npx hardhat node",
     "deploy": "npx hardhat deploy --export ./artifacts.json",
-    "deploy-mumbai": "npx hardhat deploy --export ./artifacts.json --network mumbai"
+    "deploy-mumbai": "npx hardhat deploy --export ./artifacts.json --network mumbai",
+    "upload": "npx hardhat run scripts/uploadDoc.js",
+    "config": "npx hardhat run scripts/setConfig.js"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.2"
