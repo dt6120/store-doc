@@ -40,6 +40,19 @@ describe("StoreDoc", () => {
             })
         })
 
+        describe("with duplicate document", () => {
+            beforeEach(async () => {
+                const tx = await contract.connect(authUploader).uploadDoc(mediaHash)
+                await tx.wait()
+            })
+
+            it("throws an error", async () => {
+                await expect(
+                    contract.connect(authUploader).uploadDoc(mediaHash)
+                ).to.be.revertedWith("Document already uploaded")
+            })
+        })
+
         describe("with restricted uploading", () => {
             describe("user is not auth uploader", () => {
                 it("throws an error", async () => {
