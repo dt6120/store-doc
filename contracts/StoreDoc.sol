@@ -4,15 +4,11 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract StoreDoc is Ownable {
-    struct Doc {
-        string mediaHash;
-        uint256 uploadTime;
-    }
-
-    Doc[] public docs;
-
     address public authUploader;
     bool public isUploadingRestricted;
+
+    uint256 private docsCount;
+    mapping(string => uint256) private docs;
 
     event DocUploaded(
         uint256 indexed id,
@@ -52,10 +48,12 @@ contract StoreDoc is Ownable {
 
     function uploadDoc(string memory _hash) external onlyAuthUploader {
         require(bytes(_hash).length > 0, "Document hash cannot be empty");
+        require(docs[_hash] == 0, "Document already uploaded");
         
-        docs.push(Doc(_hash, block.timestamp));
+        docs[_hash] = block.timestamp;
+        docsCount++;
 
-        emit DocUploaded(docs.length - 1, _hash, block.timestamp);
+        emit DocUploaded(docsCount, _hash, block.timestamp);
     }
 
     function setAuthUploader(address _authUploader) external onlyOwner {
@@ -85,13 +83,11 @@ contract StoreDoc is Ownable {
         emit UpdateRestrictedUploading(_isUploadingRestricted);
     }
 
-    function getDoc(uint256 _id) external view returns (Doc memory) {
-        require(_id < docs.length, "Enter valid ID");
-
-        return docs[_id];
+    function docExists(string memory _hash) external view returns (bool, uint256) {
+        return (docs[_hash] > 0, docs[_hash]);
     }
 
-    function getDocCount() external view returns (uint256) {
-        return docs.length;
+    function getDocsCount() external view returns (uint256) {
+        return docsCount;
     }
 }
